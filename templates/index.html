@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>hXd FACE SENSE - Sci-Fi Edition</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        /* Custom CSS for additional styling */
+        body {
+            background-color: #080808; /* Dark background */
+            color: #00ffcc; /* Teal text color */
+            font-family: 'Arial', sans-serif; /* Futuristic font */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black container */
+            border: 1px solid #00ffcc; /* Teal border */
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+            margin-top: 20px;
+        }
+
+        .left-side {
+            padding: 20px;
+            border-right: 1px solid #00ffcc; /* Teal border */
+        }
+
+        .right-side {
+            padding: 20px;
+        }
+
+        /* Style for the camera frame */
+        #camera-frame {
+            width: 100%;
+            border: 2px solid #00ffcc; /* Teal border */
+            border-radius: 10px;
+        }
+
+        /* Style for the attendance table */
+        #attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #attendance-table th,
+        #attendance-table td {
+            border: 1px solid #00ffcc; /* Teal border */
+            padding: 8px;
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+        }
+
+        #attendance-table th {
+            background-color: #111; /* Dark background */
+            color: #00ffcc; /* Teal text color */
+            font-weight: bold;
+        }
+
+        #attendance-table td {
+            color: #fff; /* White text color */
+        }
+
+        /* Add custom scrollbar to the table */
+        #csv-data {
+            overflow: auto;
+            max-height: 400px;
+        }
+        /* Add custom scrollbar to the table container */
+        #table-container {
+            max-height: 600px; /* Set a maximum height for the container */
+            overflow-y: auto; /* Enable vertical scrollbar when content overflows */
+            border: 1px solid #00ffcc; /* Optional: Add a border to the container */
+            border-radius: 5px; /* Optional: Add border radius for a rounded appearance */
+        }
+
+        #date {
+            color: #fff; 
+        }
+
+        h2 {
+            padding: 0.30%;
+            border: double #00ffcc 8px; /* Teal double border */
+            border-radius: 15px;
+            margin-left: 40%;
+            margin-right: 40%;
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black background */
+            box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-4xl mb-8 text-center mt-9"><em>hXd FACE SENSE - Sci-Fi Edition</em></h2>
+    <div class="container mx-auto my-8 p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="left-side">
+                <h3 class="text-3xl mb-4">Live Streaming</h3>
+                <img id="camera-frame" src="{{ url_for('video_feed') }}" alt="Camera Feed" class="rounded-lg">
+            </div>
+            <div class="right-side">
+                <h3 class="text-3xl mb-4">Students Attendance: <span id="date">{{date_now}}</span></h3>
+
+                <div id="table-container">
+                    <table id="attendance-table" class="table-auto">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Student Name</th>
+                                <th class="px-4 py-2">Time Entry</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateAttendanceTable() {
+            fetch('/get_attendance_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('attendance-table-body');
+                    tableBody.innerHTML = '';
+
+                    data.forEach(row => {
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td class="px-4 py-2">${row.student_name}</td>
+                            <td class="px-4 py-2">${row.time_entry}</td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // Update the table every 3 seconds (adjust the interval as needed)
+        setInterval(updateAttendanceTable, 3000);
+    </script>
+</body>
+</html>
