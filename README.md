@@ -4,7 +4,7 @@ Welcome to hXd Face Sense, a real-time computer vision face recognition attendan
 
 ## System Requirements
 
-Before you start, make sure you have the following Python packages installed. You can install them using `pip`:
+Before you start, make sure you have the following Python packages installed. You can install them using `pip install -r requirements.txt`:
 
 ```plaintext
 flask==2.3.1
