@@ -34,6 +34,32 @@ wincertstore==0.2
 
 Facial data of students or employees should be extracted before running the detection engine. Run the info_storing.py script to store the facial data. Ensure that the photos are located in the "student_photos" folder and named in the format "firstname_lastname_integer.jpg".
 
-bash ```
+```bash
 python info_storing.py
 ```
+
+## Running the Detection Engine
+
+To use the face recognition attendance system, run the engine.py file. This Python Flask application displays a real-time attendance table and live-streaming detection camera footage side by side on a webpage.
+
+```bash
+python engine.py
+```
+
+## Web Interface
+
+Access the system through a web interface. You can view the real-time attendance table and live-streaming camera footage. The system automatically updates the attendance data.
+
+## Retrieving Attendance Data
+
+You can retrieve attendance data in CSV format or from the SQLite database. The system creates a new CSV file each day to keep track of attendance. SQLite database is used as a secondary backup system for attendance data.
+
+## Usage
+
+- Store facial data using info_storing.py.
+- Run the detection engine using engine.py.
+- Access the system through the web interface.
+- Monitor real-time attendance and camera footage.
+- Retrieve attendance data from CSV or SQLite database as needed.
+  
+Enjoy using hXd Face Sense for convenient and efficient attendance tracking!
