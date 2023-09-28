@@ -33,3 +33,7 @@ wincertstore==0.2
 ## Storing Facial Data
 
 Facial data of students or employees should be extracted before running the detection engine. Run the info_storing.py script to store the facial data. Ensure that the photos are located in the "student_photos" folder and named in the format "firstname_lastname_integer.jpg".
+
+bash ```
+python info_storing.py
+```
