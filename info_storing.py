@@ -42,6 +42,6 @@ dump(known_names, open(os.path.join("model_data", "known_names.bin"), "wb"))
 dump(known_encodings, open(os.path.join("model_data", "known_encodings.bin"), "wb"))
 
 sys.stdout.write("\n[+] Encoding completed.")
-sys.stdout.write("\n[+] Ready to run [engine.py]\n\n")
+sys.stdout.write("\n\033[92m[+] Ready to run [engine.py]\x1b[0m\n\n")
 
 
