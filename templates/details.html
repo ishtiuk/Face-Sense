@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>hXd FACE SENSE - Details & Analytics</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        /* Custom CSS for Face Sense Sci-Fi theme */
+        body {
+            background-color: #080808; /* Dark background */
+            color: #00ffcc; /* Teal text color */
+            font-family: 'Arial', sans-serif; /* Futuristic font */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black container */
+            border: 1px solid #00ffcc; /* Teal border */
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+            margin-top: 20px;
+        }
+
+        .nav-tab {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+
+        .nav-tab.active {
+            background-color: #00ffcc;
+            color: #000;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .employee-card {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .employee-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #00ffcc;
+            object-fit: cover;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        .stat-label {
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .back-button {
+            background-color: #00ffcc;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #00cc99;
+        }
+
+        h2 {
+            padding: 0.30%;
+            border: double #00ffcc 8px; /* Teal double border */
+            border-radius: 15px;
+            margin-left: 40%;
+            margin-right: 40%;
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black background */
+            box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+        }
+
+        .system-info {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .download-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .download-button {
+            background-color: #00ffcc;
+            color: #000;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .download-button:hover {
+            background-color: #00cc99;
+        }
+
+        .date-input {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+        }
+
+        .calendar-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .calendar-picker {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 15px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            min-width: 300px;
+            display: none;
+        }
+
+        .calendar-picker.show {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .calendar-nav:hover {
+            background-color: #00ffcc;
+            color: #000;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .calendar-day:hover {
+            background-color: #00ffcc;
+            color: #000;
+        }
+
+        .calendar-day.selected {
+            background-color: #00ffcc;
+            color: #000;
+        }
+
+        .calendar-day.other-month {
+            color: #666;
+        }
+
+        .weekday-header {
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #00ffcc;
+            border-bottom: 1px solid #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-4xl mb-8 text-center mt-9"><em>hXd FACE SENSE - Details & Analytics</em></h2>
+    
+    <div class="container mx-auto my-8 p-4">
+        <button class="back-button" onclick="window.location.href='/'">← Back to Main</button>
+        
+        <!-- Navigation Tabs -->
+        <div class="flex mb-4">
+            <div class="nav-tab active" onclick="showTab('overview')">System Overview</div>
+            <div class="nav-tab" onclick="showTab('employees')">Employee Profiles</div>
+            <div class="nav-tab" onclick="showTab('analytics')">Analytics</div>
+            <div class="nav-tab" onclick="showTab('downloads')">Data Downloads</div>
+            <div class="nav-tab" onclick="showTab('settings')">Settings</div>
+        </div>
+
+        <!-- System Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <h3 class="text-2xl mb-4">System Overview</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-employees-overview">0</div>
+                    <div class="stat-label">Total Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-today">0</div>
+                    <div class="stat-label">Active Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="system-uptime">0h</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="recognition-accuracy">0%</div>
+                    <div class="stat-label">Avg Accuracy</div>
+                </div>
+            </div>
+
+            <div class="system-info">
+                <h4 class="text-xl mb-3">System Information</h4>
+                <div id="system-details">
+                    <p><strong>Model Type:</strong> <span id="model-type">Loading...</span></p>
+                    <p><strong>Enhanced Profiles:</strong> <span id="enhanced-profiles">Loading...</span></p>
+                    <p><strong>Average Quality Score:</strong> <span id="avg-quality">Loading...</span></p>
+                    <p><strong>Total Variations:</strong> <span id="total-variations">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Profiles Tab -->
+        <div id="employees" class="tab-content">
+            <h3 class="text-2xl mb-4">Employee Profiles</h3>
+            <div id="employee-profiles">
+                <!-- Employee profiles will be populated here -->
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <h3 class="text-2xl mb-4">Attendance Analytics</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="weekly-attendance">0%</div>
+                    <div class="stat-label">Weekly Attendance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="monthly-attendance">0%</div>
+                    <div class="stat-label">Monthly Attendance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avg-work-hours">0h</div>
+                    <div class="stat-label">Avg Work Hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="late-arrivals">0</div>
+                    <div class="stat-label">Late Arrivals</div>
+                </div>
+            </div>
+
+            <div class="system-info">
+                <h4 class="text-xl mb-3">Attendance Trends</h4>
+                <p>Charts and graphs will be displayed here for attendance analysis.</p>
+            </div>
+        </div>
+
+        <!-- Downloads Tab -->
+        <div id="downloads" class="tab-content">
+            <h3 class="text-2xl mb-4">Data Downloads</h3>
+            
+            <div class="download-section">
+                <h4 class="text-xl mb-3">Download Attendance Data</h4>
+                
+                <div class="mb-4">
+                    <label class="block mb-2">Date Range:</label>
+                    <div class="calendar-container">
+                        <input type="text" id="start-date" class="date-input" placeholder="Start Date" readonly>
+                        <div class="calendar-picker" id="start-calendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" onclick="previousMonth('start')">&lt;</button>
+                                <span id="start-month-year"></span>
+                                <button class="calendar-nav" onclick="nextMonth('start')">&gt;</button>
+                            </div>
+                            <div class="calendar-grid" id="start-calendar-grid"></div>
+                        </div>
+                    </div>
+                    <span class="text-white">to</span>
+                    <div class="calendar-container">
+                        <input type="text" id="end-date" class="date-input" placeholder="End Date" readonly>
+                        <div class="calendar-picker" id="end-calendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" onclick="previousMonth('end')">&lt;</button>
+                                <span id="end-month-year"></span>
+                                <button class="calendar-nav" onclick="nextMonth('end')">&gt;</button>
+                            </div>
+                            <div class="calendar-grid" id="end-calendar-grid"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block mb-2">Format:</label>
+                    <button class="download-button" onclick="downloadData('csv')">Download CSV</button>
+                    <button class="download-button" onclick="downloadData('json')">Download JSON</button>
+                    <button class="download-button" onclick="downloadData('excel')">Download Excel</button>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block mb-2">Quick Downloads:</label>
+                    <button class="download-button" onclick="downloadData('today')">Today's Data</button>
+                    <button class="download-button" onclick="downloadData('week')">This Week</button>
+                    <button class="download-button" onclick="downloadData('month')">This Month</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <h3 class="text-2xl mb-4">System Settings</h3>
+            
+            <div class="system-info">
+                <h4 class="text-xl mb-3">Configuration</h4>
+                <p>System configuration options will be displayed here.</p>
+                <p>Settings for face recognition sensitivity, notification preferences, and system behavior.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            
+            // Load data for specific tab
+            if (tabName === 'overview') {
+                loadSystemOverview();
+            } else if (tabName === 'employees') {
+                loadEmployeeProfiles();
+            } else if (tabName === 'analytics') {
+                loadAnalytics();
+            }
+        }
+
+        // Load system overview data
+        function loadSystemOverview() {
+            fetch('/system_status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('model-type').textContent = data.model_type;
+                    document.getElementById('enhanced-profiles').textContent = data.enhanced_profiles;
+                    document.getElementById('avg-quality').textContent = data.average_quality;
+                    document.getElementById('total-variations').textContent = data.total_variations;
+                })
+                .catch(error => console.error('Error loading system status:', error));
+        }
+
+        // Load employee profiles
+        async function loadEmployeeProfiles() {
+            try {
+                const response = await fetch('/get_attendance_data');
+                const data = await response.json();
+                
+                const container = document.getElementById('employee-profiles');
+                container.innerHTML = '';
+                
+                for (const employee of data) {
+                    const card = document.createElement('div');
+                    card.className = 'employee-card';
+                    
+                    // Get the correct image path for this employee
+                    const imagePath = await findEmployeeImage(employee.employee_name);
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${imagePath}" 
+                                 alt="${employee.employee_name}" 
+                                 class="employee-photo mr-4"
+                                 onerror="this.src='/static/default/default-avatar.png'">
+                            <div>
+                                <h4 class="text-xl font-bold">${employee.employee_name}</h4>
+                                <p><strong>ID:</strong> ${employee.employee_id}</p>
+                                <p><strong>Status:</strong> ${employee.status}</p>
+                                <p><strong>Check In:</strong> ${employee.time_in || 'Not checked in'}</p>
+                                <p><strong>Check Out:</strong> ${employee.time_out || 'Not checked out'}</p>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            } catch (error) {
+                console.error('Error loading employee profiles:', error);
+            }
+        }
+
+        // Function to find the correct employee image file
+        async function findEmployeeImage(employeeName) {
+            try {
+                const response = await fetch(`/find_employee_image/${encodeURIComponent(employeeName)}`);
+                const data = await response.json();
+                return data.image_path;
+            } catch (error) {
+                console.error('Error finding employee image:', error);
+                return '/static/default/default-avatar.png';
+            }
+        }
+
+        // Load analytics data
+        function loadAnalytics() {
+            // Placeholder for analytics data
+            document.getElementById('weekly-attendance').textContent = '85%';
+            document.getElementById('monthly-attendance').textContent = '92%';
+            document.getElementById('avg-work-hours').textContent = '8.5h';
+            document.getElementById('late-arrivals').textContent = '3';
+        }
+
+        // Calendar functionality
+        let currentStartMonth = new Date();
+        let currentEndMonth = new Date();
+        
+        // Initialize calendars
+        function initCalendars() {
+            renderCalendar('start', currentStartMonth);
+            renderCalendar('end', currentEndMonth);
+            
+            // Add click event listeners for date inputs
+            document.getElementById('start-date').addEventListener('click', () => toggleCalendar('start'));
+            document.getElementById('end-date').addEventListener('click', () => toggleCalendar('end'));
+            
+            // Close calendars when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.calendar-container')) {
+                    hideAllCalendars();
+                }
+            });
+        }
+        
+        function toggleCalendar(type) {
+            hideAllCalendars();
+            const calendar = document.getElementById(`${type}-calendar`);
+            calendar.classList.toggle('show');
+        }
+        
+        function hideAllCalendars() {
+            document.querySelectorAll('.calendar-picker').forEach(cal => cal.classList.remove('show'));
+        }
+        
+        function renderCalendar(type, date) {
+            const monthYear = document.getElementById(`${type}-month-year`);
+            const grid = document.getElementById(`${type}-calendar-grid`);
+            
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            monthYear.textContent = `${getMonthName(month)} ${year}`;
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            grid.innerHTML = '';
+            
+            // Add weekday headers
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'weekday-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            // Add calendar days
+            for (let i = 0; i < 42; i++) {
+                const day = new Date(startDate);
+                day.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day.getDate();
+                
+                if (day.getMonth() !== month) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                dayElement.addEventListener('click', () => selectDate(type, day));
+                grid.appendChild(dayElement);
+            }
+        }
+        
+        function getMonthName(month) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[month];
+        }
+        
+        function selectDate(type, date) {
+            const input = document.getElementById(`${type}-date`);
+            const formattedDate = formatDateForDisplay(date);
+            input.value = formattedDate;
+            hideAllCalendars();
+        }
+        
+        function formatDateForDisplay(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        function previousMonth(type) {
+            if (type === 'start') {
+                currentStartMonth.setMonth(currentStartMonth.getMonth() - 1);
+                renderCalendar('start', currentStartMonth);
+            } else {
+                currentEndMonth.setMonth(currentEndMonth.getMonth() - 1);
+                renderCalendar('end', currentEndMonth);
+            }
+        }
+        
+        function nextMonth(type) {
+            if (type === 'start') {
+                currentStartMonth.setMonth(currentStartMonth.getMonth() + 1);
+                renderCalendar('start', currentStartMonth);
+            } else {
+                currentEndMonth.setMonth(currentEndMonth.getMonth() + 1);
+                renderCalendar('end', currentEndMonth);
+            }
+        }
+        
+        // Download data functionality
+        function downloadData(type) {
+            if (type === 'today') {
+                const today = new Date();
+                const formattedToday = formatDateForDisplay(today);
+                downloadAttendanceData(formattedToday, formattedToday, 'csv');
+            } else if (type === 'week') {
+                const today = new Date();
+                const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                const formattedWeekAgo = formatDateForDisplay(weekAgo);
+                const formattedToday = formatDateForDisplay(today);
+                downloadAttendanceData(formattedWeekAgo, formattedToday, 'csv');
+            } else if (type === 'month') {
+                const today = new Date();
+                const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+                const formattedMonthAgo = formatDateForDisplay(monthAgo);
+                const formattedToday = formatDateForDisplay(today);
+                downloadAttendanceData(formattedMonthAgo, formattedToday, 'csv');
+            } else {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+                
+                if (startDate && endDate) {
+                    downloadAttendanceData(startDate, endDate, type);
+                } else {
+                    alert('Please select a date range');
+                }
+            }
+        }
+
+        function downloadAttendanceData(startDate, endDate, format) {
+            // Show loading state
+            const buttons = document.querySelectorAll('.download-button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.textContent = 'Processing...';
+            });
+            
+            // Call actual backend endpoint
+            const url = `/download_attendance?format=${format}&start_date=${startDate}&end_date=${endDate}`;
+            
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        if (format === 'csv') {
+                            return response.blob();
+                        } else {
+                            return response.json();
+                        }
+                    } else {
+                        throw new Error('Download failed');
+                    }
+                })
+                .then(data => {
+                    if (format === 'csv') {
+                        // Download CSV file
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `attendance_${startDate.replace(/\//g, '-')}_to_${endDate.replace(/\//g, '-')}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        // Handle JSON data
+                        console.log('JSON data:', data);
+                        // You could display this data or save it as a file
+                    }
+                })
+                .catch(error => {
+                    console.error('Download error:', error);
+                    alert('Download failed. Please try again.');
+                })
+                .finally(() => {
+                    // Reset button states
+                    buttons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.textContent = btn.getAttribute('data-original-text') || 'Download';
+                    });
+                });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemOverview();
+            initCalendars();
+            
+            // Store original button text for reset
+            document.querySelectorAll('.download-button').forEach(btn => {
+                btn.setAttribute('data-original-text', btn.textContent);
+            });
+        });
+    </script>
+</body>
+</html>

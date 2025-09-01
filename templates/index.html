@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>hXd FACE SENSE - Office Attendance Edition</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        /* Custom CSS for Face Sense Sci-Fi theme */
+        body {
+            background-color: #080808; /* Dark background */
+            color: #00ffcc; /* Teal text color */
+            font-family: 'Arial', sans-serif; /* Futuristic font */
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black container */
+            border: 1px solid #00ffcc; /* Teal border */
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+            margin-top: 20px;
+        }
+
+        .left-side {
+            padding: 20px;
+            border-right: 1px solid #00ffcc; /* Teal border */
+        }
+
+        .right-side {
+            padding: 20px;
+        }
+
+        /* Style for the camera frame */
+        #camera-frame {
+            width: 100%;
+            border: 2px solid #00ffcc; /* Teal border */
+            border-radius: 10px;
+        }
+
+        /* Style for the attendance table */
+        #attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #attendance-table th,
+        #attendance-table td {
+            border: 1px solid #00ffcc; /* Teal border */
+            padding: 8px;
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+        }
+
+        #attendance-table th {
+            background-color: #111; /* Dark background */
+            color: #00ffcc; /* Teal text color */
+            font-weight: bold;
+        }
+
+        #attendance-table td {
+            color: #fff; /* White text color */
+        }
+
+        /* Add custom scrollbar to the table container */
+        #table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #00ffcc; /* Teal border */
+            border-radius: 5px;
+        }
+
+        .status-in {
+            background-color: #00ffcc; /* Teal for check-in */
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .status-out {
+            background-color: #ff6b6b; /* Red for check-out */
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .header-container {
+            background-color: rgba(0, 0, 0, 0.9); /* Dark header */
+            color: #00ffcc; /* Teal text */
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid #00ffcc;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+        }
+
+        .stat-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.3);
+            flex: 1;
+            margin: 0 0.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffcc;
+        }
+
+        .stat-label {
+            color: #fff;
+        }
+
+        h2 {
+            padding: 0.30%;
+            border: double #00ffcc 8px; /* Teal double border */
+            border-radius: 15px;
+            margin-left: 40%;
+            margin-right: 40%;
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent black background */
+            box-shadow: 0px 0px 10px rgba(0, 255, 204, 0.5); /* Teal box shadow */
+        }
+
+        /* Specific styling for the main title */
+        h2:first-of-type {
+            margin-bottom: 2rem;
+            margin-top: 2rem;
+        }
+
+        #date {
+            color: #fff; 
+        }
+
+        .info-text {
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-4xl mb-8 text-center mt-9"><em>hXd FACE SENSE - Office Attendance Edition</em></h2>
+    <div class="container mx-auto my-8 p-0 overflow-hidden">
+        <div class="header-container">
+            <p class="text-center text-xl mt-2">Date: <span id="date">{{date_now}}</span></p>
+            <div class="text-center mt-3">
+                <a href="/details" class="inline-block bg-transparent border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">
+                    📊 Details & Analytics
+                </a>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <p class="stat-label">Checked In</p>
+                <p class="stat-value" id="checked-in-count">0</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-label">Checked Out</p>
+                <p class="stat-value" id="checked-out-count">0</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-label">Total Employees</p>
+                <p class="stat-value" id="total-employees">0</p>
+            </div>
+            <div class="stat-box">
+                <p class="stat-label">Current Time</p>
+                <p class="stat-value" id="current-time">00:00:00</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+            <div class="left-side">
+                <h3 class="text-3xl mb-4">Live Monitoring</h3>
+                <img id="camera-frame" src="{{ url_for('video_feed') }}" alt="Camera Feed" class="rounded-lg">
+                <div class="mt-4 info-text">
+                    <p><strong>Morning (Before 12 PM):</strong> Check-IN processing</p>
+                    <p><strong>Afternoon/Evening (After 12 PM):</strong> Check-OUT processing</p>
+                </div>
+            </div>
+            <div class="right-side">
+                <h3 class="text-3xl mb-4">Today's Attendance</h3>
+
+                <div id="table-container">
+                    <table id="attendance-table" class="table-auto">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2">Employee</th>
+                                <th class="px-4 py-2">ID</th>
+                                <th class="px-4 py-2">Check IN</th>
+                                <th class="px-4 py-2">Check OUT</th>
+                                <th class="px-4 py-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <!-- Attendance data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Update the current time
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            // Convert to 12-hour format
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            const formattedHours = displayHours.toString().padStart(2, '0');
+            
+            document.getElementById('current-time').textContent = `${formattedHours}:${minutes}:${seconds} ${ampm}`;
+        }
+        
+        // Update system status
+        function updateSystemStatus() {
+            fetch('/system_status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update any system status indicators if needed
+                    console.log('System status updated:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating system status:', error);
+                });
+        }
+        
+        // Update attendance table and stats
+        function updateAttendanceTable() {
+            fetch('/get_attendance_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('attendance-table-body');
+                    tableBody.innerHTML = '';
+                    
+                    let checkedInCount = 0;
+                    let checkedOutCount = 0;
+                    
+                    data.forEach(row => {
+                        const newRow = document.createElement('tr');
+                        
+                        // Count status
+                        if (row.status === 'IN' && !row.time_out) {
+                            checkedInCount++;
+                        } else if (row.status === 'OUT' || row.time_out) {
+                            checkedOutCount++;
+                        }
+                        
+                        // Format status display
+                        let statusDisplay = '';
+                        if (row.status === 'IN' && !row.time_out) {
+                            statusDisplay = '<span class="status-in">IN</span>';
+                        } else if (row.status === 'OUT' || row.time_out) {
+                            statusDisplay = '<span class="status-out">OUT</span>';
+                        } else {
+                            statusDisplay = row.status || '';
+                        }
+                        
+                        newRow.innerHTML = `
+                            <td class="px-4 py-2">${row.employee_name}</td>
+                            <td class="px-4 py-2">${row.employee_id}</td>
+                            <td class="px-4 py-2">${row.time_in || ''}</td>
+                            <td class="px-4 py-2">${row.time_out || ''}</td>
+                            <td class="px-4 py-2">${statusDisplay}</td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    });
+                    
+                    // Update stats
+                    document.getElementById('checked-in-count').textContent = checkedInCount;
+                    document.getElementById('checked-out-count').textContent = checkedOutCount;
+                    document.getElementById('total-employees').textContent = data.length;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // Update time every second
+        setInterval(updateCurrentTime, 1000);
+        
+        // Update the table every 1 second for more responsive updates
+        setInterval(updateAttendanceTable, 1000);
+        
+        // Update system status every 5 seconds
+        setInterval(updateSystemStatus, 5000);
+        
+        // Initial updates
+        updateCurrentTime();
+        updateAttendanceTable();
+        updateSystemStatus();
+        
+        // Add real-time notification sound for check-ins/outs
+        let lastAttendanceCount = 0;
+        function checkForNewAttendance() {
+            fetch('/get_attendance_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > lastAttendanceCount && lastAttendanceCount > 0) {
+                        // New attendance recorded - could add notification sound here
+                        console.log('New attendance recorded!');
+                    }
+                    lastAttendanceCount = data.length;
+                });
+        }
+        setInterval(checkForNewAttendance, 2000);
+    </script>
+</body>
+</html>
