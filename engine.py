@@ -7,10 +7,28 @@ from pickle import load
 import face_recognition
 from datetime import datetime
 from flask import Flask, render_template, Response, jsonify
+import logging
+from config import config
+from camera_manager import camera_manager
+from database import db_manager
+from auth import auth_manager, init_auth_routes, add_security_headers
+from monitoring import system_monitor, init_monitoring_routes
+
+# Configure logging
+logging.basicConfig(
+    level=getattr(logging, config.app.log_level),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.secret_key = config.security.secret_key
 
-db_name = "attendance_data/attendance.db"
+# Add security headers to all responses
+app.after_request(add_security_headers)
+
+# Use database name from config
+db_name = config.database.name
 
 # Load both original and enhanced encodings
 try:
@@ -64,7 +82,11 @@ else:
     print("[!] No employee names extracted from filenames, using known_names")
     employee_names = known_names
 
-video_capture = cv2.VideoCapture(0)
+# Initialize camera manager instead of direct VideoCapture
+logger.info(f"Initializing camera manager for {config.camera.source_type}")
+if not camera_manager.start_capture():
+    logger.error("Failed to initialize camera manager")
+    exit(1)
 
 # Remove the problematic attendance_list - we'll track attendance properly in the database
 
@@ -260,8 +282,8 @@ def recognizer_engine():
     small_frame = None
 
     while True:
-        ret, frame = video_capture.read()
-        if not ret:
+        frame = camera_manager.get_frame()
+        if frame is None:
             continue  # Skip this iteration if frame couldn't be read
             
         frame_count += 1
@@ -580,18 +602,97 @@ def cleanup_old_cooldowns():
     if expired_names:
         print(f"[+] Cleaned up {len(expired_names)} expired cooldown entries")
 
+# Add health check endpoints
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'camera_connected': camera_manager.is_connected(),
+        'environment': config.environment,
+        'timestamp': datetime.now().isoformat()
+    })
+
+@app.route('/health/camera')
+def camera_health():
+    """Camera-specific health check"""
+    return jsonify({
+        'camera_connected': camera_manager.is_connected(),
+        'camera_type': config.camera.source_type,
+        'camera_source': config.camera.source if config.environment != 'production' else 'hidden'
+    })
+
+@app.route('/health/db')
+def database_health():
+    """Database health check"""
+    try:
+        conn = sqlite3.connect(db_name)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM attendance")
+        count = cursor.fetchone()[0]
+        conn.close()
+        return jsonify({
+            'database_connected': True,
+            'record_count': count,
+            'database_type': config.database.type
+        })
+    except Exception as e:
+        return jsonify({
+            'database_connected': False,
+            'error': str(e)
+        }), 500
+
 if __name__ == '__main__':
+    # Validate configuration
+    validation = config.validate_config()
+    if not validation['valid']:
+        logger.error(f"Configuration validation failed: {validation['issues']}")
+        if config.environment == 'production':
+            exit(1)
+    
+    # Initialize database tables
+    try:
+        db_manager.create_tables()
+        logger.info("Database tables initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database tables: {e}")
+        if config.environment == 'production':
+            exit(1)
+    
+    # Initialize authentication routes
+    init_auth_routes(app)
+    
+    # Initialize monitoring routes
+    init_monitoring_routes(app)
+    
+    # Start system monitoring
+    system_monitor.start_monitoring()
+    
     print(f"[+] Starting Face Sense - Office Attendance System")
+    print(f"[+] Environment: {config.environment}")
     print(f"[+] Model: {'Enhanced' if enhanced_encodings else 'Basic'}")
     print(f"[+] Employees: {len(employee_names)}")
     if enhanced_encodings:
         print(f"[+] Enhanced Profiles: {len(enhanced_encodings)}")
         print(f"[+] Total Variations: {sum(len(e['encodings']) for e in enhanced_encodings)}")
     
-    # Single attendance table - no daily table creation needed
-    print(f"[+] Using single attendance table for all records")
-    
-    print(f"[+] Web Interface: http://localhost:5000")
+    print(f"[+] Camera: {config.camera.source_type} - {config.camera.source}")
+    print(f"[+] Database: {config.database.type} - {config.database.name}")
+    print(f"[+] Authentication: {'Enabled' if config.security.enable_auth else 'Disabled'}")
+    print(f"[+] Web Interface: http://{config.app.host}:{config.app.port}")
+    print(f"[+] Health Check: http://{config.app.host}:{config.app.port}/health")
+    print(f"[+] API Endpoints: http://{config.app.host}:{config.app.port}/api/")
     print(f"[+] Press 'q' to quit\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    try:
+        app.run(
+            debug=config.app.debug,
+            host=config.app.host,
+            port=config.app.port,
+            threaded=True
+        )
+    except KeyboardInterrupt:
+        logger.info("Shutting down Face-Sense...")
+        camera_manager.stop_capture()
+        system_monitor.stop_monitoring()
+        logger.info("Face-Sense stopped successfully")

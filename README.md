@@ -14,6 +14,9 @@ Face-Sense
 ├── model_data/
 │   ├── known_names.bin           # Pickle file containing the names of known faces
 │   ├── known_encodings.bin       # Pickle file containing the encodings of known faces
+│   ├── enhanced/                 # Enhanced model with multiple variations per person
+│       ├── enhanced_encodings.bin # Multiple facial variations per employee
+│       └── quality_scores.bin    # Quality scores for each encoding
 │
 ├── employee_photos/
 │   ├── [firstname_lastname_employeeid].jpg  # Photos of employees used for face encoding
@@ -28,6 +31,23 @@ Face-Sense
 ├── info_storing.py               # Script to encode employee faces and store encodings
 └── main.py                       # Main script for face recognition and attendance logging
 ```
+
+## 🔬 **Technical Advantages**
+
+### **Why Face-Sense is Superior to Basic Face Recognition**
+- **Expression Tolerance**: Recognizes people with different facial expressions (smile, neutral, etc.)
+- **Angle Flexibility**: Works with faces turned up to ±15° from frontal view
+- **Lighting Adaptation**: Handles various lighting conditions through quality-based thresholds
+- **Quality-Aware Processing**: Automatically adjusts recognition parameters based on image quality
+- **Variation Generation**: Creates multiple encoding variations automatically from single input images
+- **Adaptive Thresholds**: Higher quality images get stricter matching for better accuracy
+- **Cooldown Management**: Prevents false positives from rapid successive detections
+
+### **Performance Optimizations**
+- **Adaptive Frame Processing**: Scales processing based on detected face count
+- **Efficient Memory Management**: Automatic cleanup of expired detection cooldowns
+- **Smart Database Operations**: Single record per person per day with intelligent updates
+- **Real-Time Web Updates**: Live attendance dashboard with 1-second refresh intervals
 
 ## Installation
 

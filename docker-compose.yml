@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  face-sense:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - ENVIRONMENT=production
+      - CAMERA_TYPE=${CAMERA_TYPE:-ip_camera}
+      - CAMERA_SOURCE=${CAMERA_SOURCE}
+      - CAMERA_USERNAME=${CAMERA_USERNAME}
+      - CAMERA_PASSWORD=${CAMERA_PASSWORD}
+      - DB_TYPE=${DB_TYPE:-postgresql}
+      - DB_HOST=postgres
+      - DB_NAME=${DB_NAME:-face_sense}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - ./attendance_data:/app/attendance_data
+      - ./model_data:/app/model_data
+      - ./employee_photos:/app/employee_photos
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - face-sense-network
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${DB_NAME:-face_sense}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - face-sense-network
+
+  redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+    networks:
+      - face-sense-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - face-sense
+    restart: unless-stopped
+    networks:
+      - face-sense-network
+
+volumes:
+  postgres_data:
+
+networks:
+  face-sense-network:
+    driver: bridge
